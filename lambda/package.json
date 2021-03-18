@@ -1,0 +1,20 @@
+{
+  "name": "alexa-remote-api-example-skill",
+  "version": "1.0.0",
+  "description": "An example Alexa skill that shows how to call an external API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dabble Lab",
+  "license": "ISC",
+  "dependencies": {
+    "ask-sdk-core": "^2.9.0",
+    "ask-sdk-model": "^1.29.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
+  }
+}
