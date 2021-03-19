@@ -13,31 +13,17 @@ const LaunchRequestHandler = {
             .getResponse();
     }
 };
-
 const HowManyPlayersIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HowManyPlayersIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'Ok, got it!';
+        let numberOfPlayers = this.event.request.intent.slots.numberOfPlayers.value;
+        const speakOutput = `You said` + numberOfPlayers;
+        
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-            .getResponse();
-    }
-};
-
-const HelloWorldIntentHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HelloWorldIntent';
-    },
-    handle(handlerInput) {
-        const speakOutput = 'Hello World!';
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
 };
@@ -121,7 +107,6 @@ const ErrorHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
     .addRequestHandlers(
         LaunchRequestHandler,
-        HelloWorldIntentHandler,
         HowManyPlayersIntentHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,
