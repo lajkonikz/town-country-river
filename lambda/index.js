@@ -2,7 +2,7 @@
 /* eslint-disable global-require */
 
 const Alexa = require('ask-sdk-core');
-const aaa = 'aaaa';
+const aaa = 'bbb';
 const GetRemoteDataHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest'
