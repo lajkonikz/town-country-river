@@ -1,4 +1,4 @@
-const BaseValidator = class BaseValidator {
+class BaseValidator {
   constructor() { }
   validate(value) {
     if (!this.validation_data) {
@@ -9,7 +9,7 @@ const BaseValidator = class BaseValidator {
   }
 }
 
-const CountryValidator = class CountryValidator extends BaseValidator {
+class CountryValidator extends BaseValidator {
     constructor(language) {
       super();
       this.language = language;
@@ -24,7 +24,7 @@ const CountryValidator = class CountryValidator extends BaseValidator {
     }
 };
 
-const ColorValidator = class ColorValidator extends BaseValidator {
+class ColorValidator extends BaseValidator {
     constructor(language) {
         super();
         this.language = language;
