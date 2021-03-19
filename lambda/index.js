@@ -13,20 +13,7 @@ const LaunchRequestHandler = {
             .getResponse();
     }
 };
-const HowManyPlayersIntentHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HowManyPlayersIntent';
-    },
-    handle(handlerInput) {
-        let numberOfPlayers = this.event.request.intent.slots.numberOfPlayers.value;
-        const speakOutput = `You said` + numberOfPlayers;
-        
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .getResponse();
-    }
-};
+
 const HelpIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
