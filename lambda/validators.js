@@ -22,8 +22,6 @@ class BaseValidator {
       throw new Error("Method initialize() should be called only after setting the language.");
     }
 
-    console.log(this.language);
-    console.log(this.validation_data);
     // Grabs data only if not set.
     if (this.validation_data) return;
 
