@@ -15,7 +15,13 @@ describe('CountryValidator', () => {
   });
 
   it('should check valid a case insensitive value', () => {
-    assert.strictEqual(validator.check('BraSil'));
+    assert.strictEqual(validator.check('BraSil'), true);
+  });
+
+  it('should check invalid a case sensitive value', () => {
+    const sensitiveValidator = new validators.Country('pt-br');
+    sensitiveValidator.caseInsensitive = false;
+    assert.strictEqual(sensitiveValidator.check('BraSil'), false);
   });
 
   it('should fail if language does not exist', () => {
