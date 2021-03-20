@@ -14,6 +14,21 @@ const LaunchRequestHandler = {
     }
 };
 
+const HowManyPlayersIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HowManyPlayersIntent';
+    },
+    handle(handlerInput) {
+        const speakOutput = 'We are in HowManyPlayersIntentHandler';
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(speakOutput)
+            .getResponse();
+    }
+};
+
 const HelpIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -94,6 +109,7 @@ const ErrorHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
     .addRequestHandlers(
         LaunchRequestHandler,
+        HowManyPlayersIntentHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,
         SessionEndedRequestHandler,
