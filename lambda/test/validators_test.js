@@ -1,9 +1,7 @@
 const assert = require('assert');
-
 const validators = require('../validators')
 
 describe('CountryValidator', () => {
-  
   var validator = new validators.Country('pt-br');
 
   it('should find a valid country', () => {
@@ -26,7 +24,7 @@ describe('CountryValidator', () => {
 
   it('should fail if language does not exist', () => {
     assert.throws(() => {
-      new validators.Country('fr-fr');
+      new validators.Country('fr-fr');  
     }, {
       name: "Error",
       message: "Language not supported for this Category."
