@@ -1,3 +1,4 @@
+const { fail } = require('assert');
 const assert = require('assert');
 const validators = require('../validators')
 
@@ -42,8 +43,18 @@ describe('CountryValidator', () => {
 
 describe('ColorValidator', () => {
   var validator = new validators.Color('pt-br');
-  
+
   it('should find a valid color', () => {
     assert.strictEqual(validator.check('preto'), true);
   });
+
+  it('should fail if language is unset', () => {
+    var failValidator = new validators.Color('pt-br');
+    failValidator.validation_data = null;
+    failValidator.language = null;
+
+    assert.throws(() => failValidator.check('x'), {
+      name: "Error"
+    });
+  })
 });

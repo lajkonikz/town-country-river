@@ -1,5 +1,4 @@
 const fs = require('fs');
-var glob = require("glob");
 
 /**
  * @abstract
@@ -72,8 +71,8 @@ const localStorageDataMixin = {
       if (matches !== null) {
         let content = fs.readFileSync(`./i18n/${file}`, 'utf8');
         const currentLanguage = matches[1];
-        const value = JSON.parse(content);
-        Object.assign(result, {[currentLanguage]: value});
+        const values = JSON.parse(content);
+        Object.assign(result, {[currentLanguage]: values});
       }
     });
     return result;
@@ -85,19 +84,13 @@ const localStorageDataMixin = {
  * @augments BaseValidator
  */
 class CountryValidator extends BaseValidator {
-    constructor(language) {
-      super(language);
-      this.category = 'country';
-      super.initialize();
-    }
-
-    getData() {
-      return {
-        "pt-br": ["brasil", "argentina", "polonia"],
-        "en-us": ["brazil", "argentina", "poland"]
-      }
-    }
+  constructor(language) {
+    super(language);
+    this.category = 'country';
+    super.initialize();
+  }
 };
+Object.assign(CountryValidator.prototype, localStorageDataMixin);
 
 /**
  * @class Creates a ColorValidator
