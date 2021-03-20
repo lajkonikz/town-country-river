@@ -1,6 +1,14 @@
 const assert = require('assert');
 const validators = require('../validators')
 
+describe('BaseValidator', () => {
+  it('should be able to instantiate BaseValidator', () => {
+    assert.throws(() => new validators.Base(), {
+      name: "TypeError"
+    });
+  });
+});
+
 describe('CountryValidator', () => {
   var validator = new validators.Country('pt-br');
 

@@ -6,10 +6,11 @@ class BaseValidator {
   /**
    * @constructor Constructor only should be used by subclasses.
    */
-  constructor() { 
+  constructor(language) { 
     if (new.target === BaseValidator) {
       throw new TypeError("Cannot construct BaseValidator instances directly");
     }
+    this.language = language;
     this.caseInsensitive = true;
   }
 
@@ -62,8 +63,7 @@ class BaseValidator {
  */
 class CountryValidator extends BaseValidator {
     constructor(language) {
-      super();
-      this.language = language;
+      super(language);
       this.category = 'country';
       super.initialize();
     }
@@ -87,8 +87,7 @@ class CountryValidator extends BaseValidator {
  */
 class ColorValidator extends BaseValidator {
     constructor(language) {
-      super()
-      this.language = language;
+      super(language)
       this.category = 'color';
       super.initialize();
     }
@@ -106,6 +105,7 @@ class ColorValidator extends BaseValidator {
 };
 
 module.exports = {
-    Country: CountryValidator,
-    Color: ColorValidator
+  Base: BaseValidator,
+  Country: CountryValidator,
+  Color: ColorValidator
 };
