@@ -20,7 +20,7 @@ const HowManyPlayersIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HowManyPlayersIntent';
     },
     handle(handlerInput) {
-        let numberOfPlayers = handlerInput.resuestEnvelope.request.intent.slots.numberOfPlayers.value;
+        let numberOfPlayers = handlerInput.requestEnvelope.request.intent.slots.numberOfPlayers.value;
         const speakOutput = 'test';
 
         return handlerInput.responseBuilder
