@@ -17,7 +17,7 @@ const LaunchRequestHandler = {
 const HowManyPlayersIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HowManyPlayersIntent';
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HowManyPlayersIntent';
     },
     handle(handlerInput) {
         const speakOutput = 'We are in HowManyPlayersIntentHandler';
