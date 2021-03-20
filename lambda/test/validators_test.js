@@ -14,6 +14,10 @@ describe('CountryValidator', () => {
     assert.strictEqual(validator.check('uniao sovietica'), false);
   });
 
+  it('should check valid a case insensitive value', () => {
+    assert.strictEqual(validator.check('BraSil'));
+  });
+
   it('should fail if language does not exist', () => {
     assert.throws(() => {
       new validators.Country('fr-fr');
