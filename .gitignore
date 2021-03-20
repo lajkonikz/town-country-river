@@ -2,3 +2,6 @@ ask-resources.json
 .ask
 .vscode
 lambda/node_modules
+
+# Code-coverage results
+.nyc_output/
