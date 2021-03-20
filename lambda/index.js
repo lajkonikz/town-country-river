@@ -6,7 +6,8 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'Hello! Let`s play Town Country River! How many players will be playing? The minimum is 2 and the maximum is 5!';
+        //const speakOutput = 'Hello! Let`s play Town Country River! How many players will be playing? The minimum is 2 and the maximum is 5!';
+        const speakOutput = 'Starting...';
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .reprompt(speakOutput)
