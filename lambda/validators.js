@@ -1,3 +1,6 @@
+const fs = require('fs');
+var glob = require("glob");
+
 /**
  * @abstract
  * @classdesc Class for abstracting common validation behaviour.
@@ -56,6 +59,26 @@ class BaseValidator {
   }
 }
 
+/**
+ * @mixin localStorageDataMixin
+ */
+const localStorageDataMixin = {
+  getData() {
+    let result = {}
+    fs.readdirSync('./i18n/').forEach(file => {
+      const regex = new RegExp(`^${this.category}_(\\w{2}-\\w{2}).json`, "g");
+      const matches = regex.exec(file);
+      
+      if (matches !== null) {
+        let content = fs.readFileSync(`./i18n/${file}`, 'utf8');
+        const currentLanguage = matches[1];
+        const value = JSON.parse(content);
+        Object.assign(result, {[currentLanguage]: value});
+      }
+    });
+    return result;
+  }
+};
 
 /**
  * @class Creates a CountryValidator
@@ -68,10 +91,6 @@ class CountryValidator extends BaseValidator {
       super.initialize();
     }
 
-    /**
-     * Grab data
-     * @returns Array with valid values
-     */
     getData() {
       return {
         "pt-br": ["brasil", "argentina", "polonia"],
@@ -80,29 +99,19 @@ class CountryValidator extends BaseValidator {
     }
 };
 
-
 /**
  * @class Creates a ColorValidator
  * @augments BaseValidator
  */
 class ColorValidator extends BaseValidator {
-    constructor(language) {
-      super(language)
-      this.category = 'color';
-      super.initialize();
-    }
-
-    /**
-     * Grab data
-     * @returns Array with valid values
-     */
-    getData() {
-      return {
-        "pt-br": ["vermelho", "verde", "azul"],
-        "en-us": ["red", "green", "blue"]
-      };
-    }
+  constructor(language) {
+    super(language)
+    this.category = 'color';
+    super.initialize();
+  }
 };
+Object.assign(ColorValidator.prototype, localStorageDataMixin);
+
 
 module.exports = {
   Base: BaseValidator,

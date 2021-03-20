@@ -39,3 +39,11 @@ describe('CountryValidator', () => {
     });
   });
 });
+
+describe('ColorValidator', () => {
+  var validator = new validators.Color('pt-br');
+  
+  it('should find a valid color', () => {
+    assert.strictEqual(validator.check('preto'), true);
+  });
+});
