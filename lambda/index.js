@@ -25,7 +25,7 @@ const HowManyPlayersIntentHandler = {
         const speakOutput = 'Great! ' + numberOfPlayers + '. Now say the names of the players.';
 
         return handlerInput.responseBuilder
-            .speak(numberOfPlayers)
+            .speak(speakOutput)
             .reprompt(speakOutput)
             .getResponse();
     }
