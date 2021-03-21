@@ -23,7 +23,8 @@ const HowManyPlayersIntentHandler = {
     },
     handle(handlerInput) {
         let numberOfPlayers = handlerInput.requestEnvelope.request.intent.slots.numberOfPlayers.value;
-        const speakOutput = 'Great! ' + numberOfPlayers + '. Now say the names of the players.';
+        const speakOutput = `Great! ${numberOfPlayers} players!` 
+            + `Now say the names of the players.`;
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
