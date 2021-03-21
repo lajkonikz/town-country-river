@@ -4,13 +4,17 @@
   "description": "alexa utility for quickly building skills",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "coverage": "nyc npm run test"
   },
   "author": "Amazon Alexa",
   "license": "ISC",
   "dependencies": {
     "ask-sdk-core": "^2.6.0",
     "ask-sdk-model": "^1.18.0",
-    "aws-sdk": "^2.326.0"
+    "aws-sdk": "^2.326.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.3.2",
+    "nyc": "^15.1.0"
   }
 }
