@@ -1,6 +1,6 @@
 
 const Alexa = require('ask-sdk-core');
-const testBruxaria = '';
+
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
