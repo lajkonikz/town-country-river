@@ -1,18 +1,26 @@
+const _ = require('lodash');
 const { v4: uuidv4 } = require('uuid');
 
 class Game {
-  constructor(language) { 
-    this.setLanguage(language);
-    this.setInitialStructure();
-    this.state = 'NOT_STARTED';
+  constructor(gameModel) {
+    // If a game is provided, load it,
+    // otherwise create a NOT_STARTED game.
+    if (gameModel) {
+      this.loadGame(gameModel);
+    } else {
+      this.setInitialStructure();
+    }
   }
 
-  setLanguage(value){
-    if (value === undefined) {
-      this.language = 'en-us';
-    } else {
-      this.language = value;
-    }
+  loadGame(gameModel) {
+    var sourceObject = JSON.parse(gameModel);
+
+    const keys = Object.keys(sourceObject);    
+    keys.forEach((key, index) => {
+      const value = sourceObject[key];
+      const dataType = typeof(value);
+      this[key] = value;
+    });
   }
 
   setInitialStructure() {
@@ -21,6 +29,8 @@ class Game {
     this.categories = [];
     this.players = [];
     this.scoreboard = [];
+    this.state = 'NOT_STARTED';
+    this.pickLetterBehaviour = 'EVERY_GAME';
   }
   
   generateId() {
@@ -42,6 +52,10 @@ class Game {
     }
     this.players.push(player);
     return this;
+  }
+
+  dumps() {
+    return JSON.stringify(this, null, 4);
   }
 
   setCategories(categories) {
@@ -98,24 +112,155 @@ class Game {
     return chosenLetter;
   }
 
+  setPickLetterBehaviour(pickLetterBehaviour) {
+    this.pickLetterBehaviour = pickLetterBehaviour;
+    return this;
+  }
+
   createRounds() {
     const sortedCategories = this.randomSortCategories();
     const letters = this.getAvailableLetters();
     
+    var letter = this.pickRandom(letters);
+
     for (let i = 0; i < sortedCategories.length; i++) {
-      const roundPlayers = this.shuffle(this.players);
+      
+      if (this.pickLetterBehaviour == 'EVERY_ROUND') {
+        letter = this.pickRandom(letters);
+      }
+
+      const roundPlayers = this.shuffle(this.players).map((p) => {
+        return {
+          name: p,
+          scored: false
+        }
+      });
+
       this.rounds.push({
         round_id: i + 1,
         category: sortedCategories[i],
-        letter: this.pickRandom(letters),
+        letter: letter,
         round_players: roundPlayers
       });
+    }
+  }
+
+  setState(state) {
+    this.state = state;
+
+    if (this.state == 'STARTED') {
+      this.currentState = {
+        category: null,
+        player: null,
+        letter: null,
+        roundId: null
+      };
     }
   }
 
   start() {
     this.validateStartGame();
     this.createRounds();
+    this.setState('STARTED');
+    this.updateCurrentState();
+    return this;
+  }
+
+  getRound(roundId) {
+    return this.rounds[roundId - 1];
+  }
+
+  score(roundId, player, points) {
+    const round = this.getRound(roundId);
+
+    // Validate round
+    if (round === undefined) {
+      throw new Error("Round not found.");
+    }
+
+    // Validate player
+    if (!this.players.includes(player)) {
+      throw new Error("Player not found.");
+    }
+
+    // Validate points
+    if (points < 0) {
+      throw new Error("Points should be greater or equal zero.");
+    }
+
+    // Validate if player being score is the current one.
+    if (this.currentState.player != player) {
+      throw new Error(`Player ${player} should not be playing now. Current one is: ${this.currentState.player}`);
+    }
+
+    // Score the point, update state and exit the function
+    for (let p of round.round_players) {
+      if (p.name == player) {
+        p.points = points;
+        p.scored = true;
+        this.updateCurrentState();
+        return;
+      }
+    }
+  }
+
+  finish() {
+    this.state = 'FINISHED'
+    this.currentState = null;
+  }
+
+  updateCurrentState() {
+    this.updateScoreboard();
+
+    for (let round of this.rounds) {
+      for (let player of round.round_players) {
+        if (!player.scored) {
+          this.currentState.category = round.category,
+          this.currentState.player = player.name,
+          this.currentState.letter = round.letter,
+          this.currentState.roundId = round.round_id
+          return true;
+        }
+      }
+    }
+
+    this.finish();
+  }
+
+  getPlayersScore() {
+    let playersScore = [];
+    for (let round of this.rounds) {
+      for (let player of round.round_players) {
+        playersScore.push({
+          name: player.name,
+          points: player.points
+        });
+      }
+    }
+    return playersScore;
+  }
+
+  updateScoreboard() {
+    const scoreData = this.getPlayersScore();
+
+    // Group, sum by player name and sort by points
+    let scoreboard = _(scoreData)
+      .groupBy('name')
+      .map((player, playerName) => {
+        return {
+          name: playerName,
+          points: _.sumBy(player, 'points')
+        };
+      })
+      .sortBy(['type','points'])
+      .value()
+      .reverse();
+
+    this.scoreboard = scoreboard;
+  }
+
+  getScoreboard() {
+    return this.scoreboard;
   }
 }
 
