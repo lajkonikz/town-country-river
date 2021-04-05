@@ -92,6 +92,24 @@
         ]
       },
       {
+        "id": "Slot.Validation.874156564473.1074014598447.166961497284",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Ops. This is bigger than the maximum. Say ok and we'll start with five players, or try again."
+          }
+        ]
+      },
+      {
+        "id": "Slot.Validation.874156564473.1074014598447.1227388805975",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Ops. The minimum is two. Say ok and we'll start with two players, or try again."
+          }
+        ]
+      },
+      {
         "id": "Elicit.Slot.1440458395456.1567254491233",
         "variations": [
           {
