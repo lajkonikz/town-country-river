@@ -173,6 +173,11 @@ class Game {
   score(roundId, player, points) {
     const round = this.getRound(roundId);
 
+    // Check if game is started.
+    if (this.state != 'STARTED') {
+      throw new Error(`You only can score in a STARTED game. Current state: ${this.state}`);
+    }    
+
     // Validate round
     if (round === undefined) {
       throw new Error("Round not found.");

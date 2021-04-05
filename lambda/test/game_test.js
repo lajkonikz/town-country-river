@@ -150,16 +150,61 @@ describe('Game', () => {
     assert.strictEqual(scoreboard[2].name, 'Armanda');
   });
 
-  // Dummy tests
-  it('excludeLetters should receive an array.', () => {
-    assert.throws(() => {
-      let game = new Game()
+  it('should be able to run a complete game, loading and reloading it.', () => {
+    let game = new Game()
       .addPlayer('Andersona')
       .addPlayer('Raquela')
       .addPlayer('Armanda')
       .setCategories(['color', 'country', 'fruit'])
-      .excludeLetters('something')
-      .start();  
+      .excludeLetters(['a', 'k']);
+    
+    assert.strictEqual(game.state, 'NOT_STARTED');
+    game.start();
+    assert.strictEqual(game.state, 'STARTED');
+    
+    // Round 1. Everyone scores
+    game.score(game.currentState.roundId, game.currentState.player, 5);
+    game.score(game.currentState.roundId, game.currentState.player, 5);
+    assert.strictEqual(game.currentState.roundId, 1);
+    game.score(game.currentState.roundId, game.currentState.player, 5);
+
+    // Round 2. Session finishes and restarts.
+    // Only 2nd player scores.
+    let content = game.dumps();
+    let secondPlayerName = "";
+    let newGame = new Game(content);
+    assert.strictEqual(newGame.state, 'STARTED');
+    assert.strictEqual(newGame.currentState.roundId, 2);
+    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0);
+    secondPlayerName = newGame.currentState.player;
+    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 5);
+    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0);
+
+    // Round 3. Session finishing during the round
+    // No one scores.
+    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0);
+    content = newGame.dumps();
+
+    let newestGame = new Game(content);
+    newestGame.score(newestGame.currentState.roundId, newestGame.currentState.player, 0);
+    newestGame.score(newestGame.currentState.roundId, newestGame.currentState.player, 0);
+
+    // Check if game is finished.
+    assert.strictEqual(newestGame.state, 'FINISHED');
+    const scoreboard = newestGame.getScoreboard();
+    assert.strictEqual(scoreboard.length, 3);
+  });
+
+  // Dummy tests
+  it('excludeLetters should receive an array.', () => {
+    assert.throws(() => {
+      new Game()
+        .addPlayer('Andersona')
+        .addPlayer('Raquela')
+        .addPlayer('Armanda')
+        .setCategories(['color', 'country', 'fruit'])
+        .excludeLetters('something')
+        .start();  
     }, {
       name: "Error",
     });
