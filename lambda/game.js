@@ -55,6 +55,7 @@ class Game {
   }
 
   dumps() {
+    this.updateCurrentState();
     return JSON.stringify(this, null, 4);
   }
 
