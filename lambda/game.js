@@ -22,7 +22,6 @@ class Game {
     });
   }
 
-  // test 
   setInitialStructure() {
     this.id = this.generateId();
     this.rounds = [];
