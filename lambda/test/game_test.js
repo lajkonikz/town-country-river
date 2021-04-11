@@ -245,7 +245,7 @@ describe('Game', () => {
         .addPlayer('Raquela')
         .addPlayer('Armanda')
         .setCategories(['color', 'country', 'fruit'])
-        .excludeLetters(['a'])
+        .excludeLetters('something')
         .start();  
     }, {
       name: "Error",
