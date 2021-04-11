@@ -1,0 +1,22 @@
+name: ci-tests
+
+# Controls when the action will run. 
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Run lambda tests
+        run: |
+          pwd
+          cd lambda/
+          npm install --silent
+          npm test
