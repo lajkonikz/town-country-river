@@ -16,9 +16,8 @@ class Game {
     var sourceObject = JSON.parse(gameModel);
 
     const keys = Object.keys(sourceObject);    
-    keys.forEach((key, index) => {
+    keys.forEach((key) => {
       const value = sourceObject[key];
-      const dataType = typeof(value);
       this[key] = value;
     });
   }
@@ -31,10 +30,17 @@ class Game {
     this.scoreboard = [];
     this.state = 'NOT_STARTED';
     this.pickLetterBehaviour = 'EVERY_GAME';
+    this.excludeLettersList = [];
+    this.validateRecordedWords = true;
   }
   
   generateId() {
     return uuidv4();
+  }
+
+  notValidateRecordedWords() {
+    this.validateRecordedWords = false;
+    return this;
   }
 
   excludeLetters(letters) {
@@ -42,12 +48,12 @@ class Game {
       throw new Error("Parameter should be an array.");
     }
 
-    this.excludeLetters = letters;
+    this.excludeLettersList = letters;
     return this;
   }
 
   addPlayer(player) {
-    if (this.state != 'NOT_STARTED') {
+    if (this.state !== 'NOT_STARTED') {
       throw new Error("You only can add players before starting the game.");
     }
     this.players.push(player);
@@ -65,11 +71,11 @@ class Game {
   }
 
   validateStartGame() {
-    if (this.state != 'NOT_STARTED') {
+    if (this.state !== 'NOT_STARTED') {
       throw new Error("You only can start a game when state is NOT_STARTED.");
     }
 
-    if (this.categories.length == 0) {
+    if (this.categories.length === 0) {
       throw new Error("You cannot start a game without setting up the categories.");
     }
 
@@ -98,7 +104,7 @@ class Game {
     var all = [], i = "a".charCodeAt(0), j = "z".charCodeAt(0);
     for (; i <= j; ++i) {
       const letter = String.fromCharCode(i);
-      if (this.excludeLetters.indexOf(letter) == -1) {
+      if (this.excludeLettersList.indexOf(letter) == -1) {
         all.push(letter);
       }
     }
@@ -133,7 +139,8 @@ class Game {
       const roundPlayers = this.shuffle(this.players).map((p) => {
         return {
           name: p,
-          scored: false
+          scored: false,
+          word: null
         }
       });
 
@@ -141,7 +148,8 @@ class Game {
         round_id: i + 1,
         category: sortedCategories[i],
         letter: letter,
-        round_players: roundPlayers
+        round_players: roundPlayers,
+        recordedWords: {}
       });
     }
   }
@@ -171,9 +179,7 @@ class Game {
     return this.rounds[roundId - 1];
   }
 
-  score(roundId, player, points) {
-    const round = this.getRound(roundId);
-
+  validateScore(round, player, points, word) {
     // Check if game is started.
     if (this.state != 'STARTED') {
       throw new Error(`You only can score in a STARTED game. Current state: ${this.state}`);
@@ -199,12 +205,25 @@ class Game {
       throw new Error(`Player ${player} should not be playing now. Current one is: ${this.currentState.player}`);
     }
 
+    // Validate if word has been already recorded.
+    if (this.validateRecordedWords 
+        && round.recordedWords !== undefined 
+        && round.recordedWords.hasOwnProperty(word)) {
+      throw new Error(`Word ${word} has already been spoken by ${player}`);
+    }
+  }
+
+  score(roundId, player, points, word) {
+    const round = this.getRound(roundId);
+    this.validateScore(round, player, points, word);
+
     // Score the point, update state and exit the function
     for (let p of round.round_players) {
       if (p.name == player) {
         p.points = points;
         p.scored = true;
         this.updateCurrentState();
+        round.recordedWords[word] = player;
         return;
       }
     }

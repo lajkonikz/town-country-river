@@ -73,7 +73,7 @@ describe('Game', () => {
       const roundId = 1;
       const points = 5;
 
-    game.score(roundId, game.currentState.player, points);
+    game.score(roundId, game.currentState.player, points, 'brazil');
 
     // Check if points is correcly store inside the round.
     assert.strictEqual(game.rounds[0].round_players[0].points, points);
@@ -82,13 +82,13 @@ describe('Game', () => {
     assert.strictEqual(game.currentState.player, game.rounds[0].round_players[1].name);
 
     // Score for the second player.
-    game.score(roundId, game.currentState.player, points);
+    game.score(roundId, game.currentState.player, points, 'chile');
 
     // Check if current player is the 3rd one of the round.
     assert.strictEqual(game.currentState.player, game.rounds[0].round_players[2].name);
 
     // Score for the third player.
-    game.score(roundId, game.currentState.player, points);
+    game.score(roundId, game.currentState.player, points, 'uruguay');
 
     // Check if current player is the 1st one of the second round.
     assert.strictEqual(game.currentState.player, game.rounds[1].round_players[0].name);
@@ -110,9 +110,8 @@ describe('Game', () => {
 
     let range = n => Array.from(Array(n).keys())
     for (let i of range(9)) {
-      game.score(game.currentState.roundId, game.currentState.player, points);    
+      game.score(game.currentState.roundId, game.currentState.player, points, `a${i}`);
     }
-
     assert.strictEqual(game.state, 'FINISHED');
   });
 
@@ -140,7 +139,7 @@ describe('Game', () => {
         points = 1;
       }
 
-      game.score(game.currentState.roundId, currentPlayer, points);    
+      game.score(game.currentState.roundId, currentPlayer, points, `a${currentPlayer}.${i}`);
     }
 
     // Validate scoreboard
@@ -163,10 +162,10 @@ describe('Game', () => {
     assert.strictEqual(game.state, 'STARTED');
     
     // Round 1. Everyone scores
-    game.score(game.currentState.roundId, game.currentState.player, 5);
-    game.score(game.currentState.roundId, game.currentState.player, 5);
+    game.score(game.currentState.roundId, game.currentState.player, 5, 'brazil');
+    game.score(game.currentState.roundId, game.currentState.player, 5, 'argentina');
     assert.strictEqual(game.currentState.roundId, 1);
-    game.score(game.currentState.roundId, game.currentState.player, 5);
+    game.score(game.currentState.roundId, game.currentState.player, 5, 'poland');
 
     // Round 2. Session finishes and restarts.
     // Only 2nd player scores.
@@ -175,24 +174,67 @@ describe('Game', () => {
     let newGame = new Game(content);
     assert.strictEqual(newGame.state, 'STARTED');
     assert.strictEqual(newGame.currentState.roundId, 2);
-    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0);
+    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0, 'errado');
     secondPlayerName = newGame.currentState.player;
-    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 5);
-    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0);
+    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 5, 'brad pitt');
+    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0, 'errado2');
 
     // Round 3. Session finishing during the round
     // No one scores.
-    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0);
+    newGame.score(newGame.currentState.roundId, newGame.currentState.player, 0, 'hey');
     content = newGame.dumps();
 
     let newestGame = new Game(content);
-    newestGame.score(newestGame.currentState.roundId, newestGame.currentState.player, 0);
-    newestGame.score(newestGame.currentState.roundId, newestGame.currentState.player, 0);
+    newestGame.score(newestGame.currentState.roundId, newestGame.currentState.player, 0, 'whats');
+    newestGame.score(newestGame.currentState.roundId, newestGame.currentState.player, 0, 'uuuuuppppp');
 
     // Check if game is finished.
     assert.strictEqual(newestGame.state, 'FINISHED');
     const scoreboard = newestGame.getScoreboard();
     assert.strictEqual(scoreboard.length, 3);
+  });
+
+  it('should not be able to score a point using the same word', () => {
+    let game = new Game()
+      .addPlayer('Andersona')
+      .addPlayer('Raquela')
+      .addPlayer('Armanda')
+      .setCategories(['color', 'country', 'fruit'])
+      .excludeLetters(['a', 'k'])
+      .start();
+
+    const word = 'brazil';
+    
+    // Play brazil at first round
+    game.score(game.currentState.roundId, game.currentState.player, 5, word);
+
+    const player = game.currentState.player;
+    const expectedMessage = `Word ${word} has already been spoken by ${player}`;
+    
+    // Try to replay brazil
+    assert.throws(() => {
+      game.score(game.currentState.roundId, player, 5, word);  
+    }, {
+      name: 'Error',
+      message: expectedMessage
+    })
+  });
+
+  it('should be able to score a point using the same word', () => {
+    let game = new Game()
+      .addPlayer('Andersona')
+      .addPlayer('Raquela')
+      .addPlayer('Armanda')
+      .setCategories(['color', 'country', 'fruit'])
+      .excludeLetters(['a', 'k'])
+      .notValidateRecordedWords()
+      .start();
+
+    const word = 'brazil';
+    
+    // Play brazil at first round
+    game.score(game.currentState.roundId, game.currentState.player, 5, word);
+    game.score(game.currentState.roundId, game.currentState.player, 5, word);  
   });
 
   // Dummy tests
@@ -277,14 +319,14 @@ describe('Game', () => {
 
     // Try to score in a non-existing round.
     assert.throws(() => {
-      game.score(9, 'Jose', 5);
+      game.score(9, 'Jose', 5, 'nothing');
     }, {
       name: "Error"
     });
 
     // Try to score with a non-existing player.
     assert.throws(() => {
-      game.score(1, 'Jose', 5);
+      game.score(1, 'Jose', 5, 'nothing');
     }, {
       name: "Error"
     });
@@ -292,13 +334,13 @@ describe('Game', () => {
     // Try to score with a player who is not the current one.
     assert.throws(() => {
       const nextPlayer = game.getRound(game.currentState.roundId).round_players[1].name;
-      game.score(1, nextPlayer, 5);
+      game.score(1, nextPlayer, 5, 'nothing');
     }, {
       name: "Error"
     });
 
     assert.throws(() => {
-      game.score(1, game.currentState.player, -1);
+      game.score(1, game.currentState.player, -1, 'nothing');
     }, {
       name: "Error"
     });    
@@ -309,11 +351,9 @@ describe('Game', () => {
       .addPlayer('Andersona');
 
     assert.throws(() => {
-      game.score(1, 'Andersona', 10);
+      game.score(1, 'Andersona', 10, 'nothing');
     }, {
       name: "Error"
     });
   });
-  
-
 });
